@@ -1,5 +1,6 @@
 package acc.firewatch.cctv.service;
 
+import acc.firewatch.cctv.Repository.CctvRepository;
 import acc.firewatch.cctv.dto.CctvRequestDto;
 import acc.firewatch.cctv.dto.CctvResponseDto;
 import acc.firewatch.cctv.entity.CctvItem;
@@ -29,23 +30,12 @@ import java.util.stream.StreamSupport;
 @Slf4j
 public class CctvDynamoService {
 
-    private final DynamoDbClient dynamoDbClient;
-    private final DynamoDbEnhancedClient enhancedClient;
-    private static final String TABLE_NAME = "Cctv";
-    private static final String GSI_NAME = "district-index";
-
-    private DynamoDbTable<CctvItem> getTable() {
-        return enhancedClient
-                .table(TABLE_NAME, TableSchema.fromBean(CctvItem.class));
-    }
+    private final CctvRepository cctvRepository;
 
     // Cctv 테이블 삭제
     public void deleteTable() {
         try {
-            DeleteTableRequest request = DeleteTableRequest.builder()
-                    .tableName(TABLE_NAME)
-                    .build();
-            dynamoDbClient.deleteTable(request);
+            cctvRepository.deleteTable();
             System.out.println("✅ 테이블 삭제 완료");
         } catch (ResourceNotFoundException e) {
             System.out.println("⚠️ 테이블이 이미 존재하지 않음");
@@ -54,66 +44,29 @@ public class CctvDynamoService {
 
     // Cctv 테이블 생성
     public void createTable() {
-        CreateTableRequest request = CreateTableRequest.builder()
-                .tableName(TABLE_NAME)
-                .keySchema(KeySchemaElement.builder()
-                        .attributeName("id")
-                        .keyType(KeyType.HASH)
-                        .build())
-                .attributeDefinitions(
-                        AttributeDefinition.builder()
-                                .attributeName("id")
-                                .attributeType(ScalarAttributeType.S) // 기본 키(String)
-                                .build(),
-                        AttributeDefinition.builder()
-                                .attributeName("district")
-                                .attributeType(ScalarAttributeType.S) // GSI 키(String)
-                                .build()
-                )
-                .billingMode(BillingMode.PAY_PER_REQUEST) // 온디맨드 모드
-                .globalSecondaryIndexes(GlobalSecondaryIndex.builder()
-                        .indexName(GSI_NAME)
-                        .keySchema(KeySchemaElement.builder()
-                                .attributeName("district")
-                                .keyType(KeyType.HASH)
-                                .build())
-                        .projection(Projection.builder()
-                                .projectionType(ProjectionType.ALL)
-                                .build())
-                        .build())
-                .build();
-
-        dynamoDbClient.createTable(request);
-        System.out.println("✅ 테이블 생성 완료");
+        cctvRepository.createTable();
     }
 
     // 단건 새로 저장 또는 덮어쓰기
     public void save(CctvRequestDto requestDto) {
-        getTable().putItem(requestDto.toEntity());
+        cctvRepository.save(requestDto.toEntity());
     }
 
     // ID로 단건 조회
     public CctvItem getById(String id) {
-        return getTable().getItem(r -> r.key(k -> k.partitionValue(id)));
+        return cctvRepository.getById(id);
     }
 
     // 전체 CCTV 아이템 조회
     public List<CctvResponseDto> getAll() {
-        return StreamSupport.stream(getTable().scan().items().spliterator(), false)
+        return StreamSupport.stream(cctvRepository.getAll().spliterator(), false)
                 .map(CctvResponseDto::fromEntity)
                 .toList();
     }
 
     // 파라미터 district(군/구)에 해당하는 전체 cctv 아이템 조회
-    public List<CctvResponseDto> getByDistrict(String district) {
-        QueryConditional query = QueryConditional.keyEqualTo(Key.builder().partitionValue(district).build());
-
-        SdkIterable<Page<CctvItem>> results = getTable()
-                .index(GSI_NAME)
-                .query(query);
-
-        return StreamSupport.stream(results.spliterator(), false)
-                .flatMap(page -> page.items().stream())
+    public List<CctvResponseDto> findByDistrict(String district) {
+        return StreamSupport.stream(cctvRepository.findByDistrict(district).spliterator(), false)
                 .map(CctvResponseDto::fromEntity)
                 .toList();
     }
@@ -140,7 +93,7 @@ public class CctvDynamoService {
                         .status(Boolean.parseBoolean(parts[8]))
                         .build();
 
-                getTable().putItem(item);
+                cctvRepository.save(item);
             }
 
             log.info("✅ CSV 데이터를 DynamoDB에 성공적으로 업로드했습니다.");
@@ -153,17 +106,17 @@ public class CctvDynamoService {
 
     // 모든 district 값 조회
     public List<String> getAllDistricts() {
-        return getTable().scan().items().stream()
-                .map(CctvItem::getDistrict)                     // district 필드만 추출
-                .filter(d -> d != null && !d.trim().isEmpty())  // null/빈 문자열 제외
-                .distinct()                                     // 중복 제거
-                .sorted()                                       // 알파벳 순 정렬
+        return StreamSupport.stream(cctvRepository.getAll().spliterator(), false)
+                .map(CctvItem::getDistrict)
+                .filter(d -> d != null && !d.trim().isEmpty())
+                .distinct()
+                .sorted()
                 .toList();
     }
 
     // id에 해당하는 레코드 삭제
     public void deleteById(String id) {
-        getTable().deleteItem(r -> r.key(k -> k.partitionValue(id)));
+        cctvRepository.deleteById(id);
         log.info("✅ 삭제 완료: id = {}", id);
     }
 

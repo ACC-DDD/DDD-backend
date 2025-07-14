@@ -106,7 +106,7 @@ public class CctvDynamoController {
         // 검증 안함 → 있는 값이면 조회, 없으면 빈 리스트 반환
         if (district != null && !district.isBlank()) {
             return CustomResponse.success(
-                    cctvDynamoService.getByDistrict(district),
+                    cctvDynamoService.findByDistrict(district),
                     SuccessStatus.DYNAMO_CCTV_GET
             );
         }
