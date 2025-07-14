@@ -1,6 +1,6 @@
 package acc.firewatch.external.its;
 
-import acc.firewatch.cctv.entity.Cctv;
+import acc.firewatch.cctv.entity.CctvItem;
 import acc.firewatch.external.vworld.ReverseGeocodingService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,8 +26,8 @@ public class TrafficCctvFetcher {
     @Value("${its.api.key}")
     private String apiKey;
 
-    public List<Cctv> fetchAllCctvsWithAddress() throws Exception {
-        List<Cctv> result = new ArrayList<>();
+    public List<CctvItem> fetchAllCctvsWithAddress() throws Exception {
+        List<CctvItem> result = new ArrayList<>();
 
         for (double minX = 126.0; minX < 130.0; minX += 1.0) {
             for (double minY = 34.0; minY < 38.0; minY += 1.0) {
@@ -59,7 +59,7 @@ public class TrafficCctvFetcher {
                     String town = address.getOrDefault("town", "");
                     String name = city + " " + district;
 
-                    Cctv cctv = Cctv.builder()
+                    CctvItem cctv = CctvItem.builder()
                             .name(name)
                             .latitude(lat)
                             .longitude(lng)

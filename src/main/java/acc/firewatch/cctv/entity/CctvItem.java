@@ -27,7 +27,7 @@ public class CctvItem {
     }
 
     // GSI Secondary Partition Key
-    @DynamoDbSecondaryPartitionKey(indexNames = "DistrictIndex")
+    @DynamoDbSecondaryPartitionKey(indexNames = "district-index")
     public String getDistrict() {
         return district;
     }

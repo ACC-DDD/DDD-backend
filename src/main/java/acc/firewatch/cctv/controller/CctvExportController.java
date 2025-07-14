@@ -1,6 +1,6 @@
 package acc.firewatch.cctv.controller;
 
-import acc.firewatch.cctv.entity.Cctv;
+import acc.firewatch.cctv.entity.CctvItem;
 import acc.firewatch.cctv.service.CctvExportService;
 import acc.firewatch.external.its.TrafficCctvFetcher;
 import acc.firewatch.common.exception.CustomException;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cctvs/export")
+@RequestMapping("/cctvs/export")
 @RequiredArgsConstructor
 public class CctvExportController {
 
@@ -42,12 +42,12 @@ public class CctvExportController {
     public CustomResponse<?> exportCctvToCsv() {
         try {
             System.out.println("🚀 CCTV 데이터 수집 시작...");
-            List<Cctv> cctvs = fetcher.fetchAllCctvsWithAddress();
+            List<CctvItem> cctvs = fetcher.fetchAllCctvsWithAddress();
 
             String filePath = "src/main/resources/cctv-merged.csv";
             exportService.exportToCsv(cctvs, filePath);
 
-            return CustomResponse.success("✅ CCTV 데이터를 CSV로 저장했습니다. (파일 경로: " + filePath + ")", SuccessStatus.CCTV_CSV_EXPORT);
+            return CustomResponse.success("파일 경로: " + filePath, SuccessStatus.CCTV_CSV_EXPORT);
         } catch (Exception e) {
             e.printStackTrace();
             throw new CustomException(ErrorCode.CCTV_CSV_SAVE_ERROR);

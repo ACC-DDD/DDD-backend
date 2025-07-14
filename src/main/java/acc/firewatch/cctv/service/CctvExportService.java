@@ -1,6 +1,6 @@
 package acc.firewatch.cctv.service;
 
-import acc.firewatch.cctv.entity.Cctv;
+import acc.firewatch.cctv.entity.CctvItem;
 import acc.firewatch.common.exception.CustomException;
 import acc.firewatch.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -18,19 +18,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class CctvExportService {
 
-    public void exportToCsv(List<Cctv> cctvs, String filePath) {
+    public void exportToCsv(List<CctvItem> cctvs, String filePath) {
 
         // CSV 출력용 순번 카운터
         final AtomicInteger sequence = new AtomicInteger(1);
 
-        List<Cctv> validCctvs = cctvs.stream()
+        List<CctvItem> validCctvs = cctvs.stream()
                 .filter(c -> c.getDistrict() != null && !c.getDistrict().trim().isEmpty())
                 .toList();
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write("id,name,latitude,longitude,cctvUrl,city,district,town,status\n");
 
-            for (Cctv cctv : validCctvs) {
+            for (CctvItem cctv : validCctvs) {
                 writer.write(String.format("%d,%s,%.6f,%.6f,%s,%s,%s,%s,%b\n",
                         sequence.getAndIncrement(),
                         sanitize(cctv.getName()),
