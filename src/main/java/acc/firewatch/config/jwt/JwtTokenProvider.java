@@ -9,9 +9,13 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.security.Key;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 
 @Configuration
@@ -52,6 +56,17 @@ public class JwtTokenProvider {
                 .setExpiration(new Date(System.currentTimeMillis()+expiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseClaims(token);
+        String phoneNum = claims.getSubject();
+
+        return new UsernamePasswordAuthenticationToken(
+                phoneNum,
+                null,
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")) // or emptyList
+        );
     }
 
     public boolean validateToken(String token) {

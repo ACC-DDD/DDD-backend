@@ -114,7 +114,7 @@ public class MemberDynamoController {
             }"""))
             )
     })
-    @PostMapping("/auth/logout")
+    @PostMapping("/me/logout")
     public CustomResponse<?> logout() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String phoneNum = (String) auth.getPrincipal();
