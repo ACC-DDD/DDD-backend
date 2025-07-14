@@ -5,7 +5,7 @@ import acc.firewatch.common.response.dto.SuccessStatus;
 import acc.firewatch.member.dto.*;
 import acc.firewatch.member.entity.MemberItem;
 import acc.firewatch.member.service.AuthService;
-import acc.firewatch.member.service.MemberDynamoService;
+import acc.firewatch.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -16,14 +16,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
-public class MemberDynamoController {
+public class MemberController {
 
-    private final MemberDynamoService memberDynamoService;
+    private final MemberService memberService;
     private final AuthService authService;
 
     @Operation(summary = "회원가입 API", description = "회원가입 API 입니다 ㅎㅎㅎ")
@@ -50,7 +48,7 @@ public class MemberDynamoController {
     })
     @PostMapping("/auth/signup")
     public CustomResponse<MemberResponseDto> signUp(@RequestBody MemberRequestDto requestDto) {
-        MemberResponseDto responseDto = memberDynamoService.signUp(requestDto);
+        MemberResponseDto responseDto = memberService.signUp(requestDto);
         return CustomResponse.success(responseDto, SuccessStatus.SIGNUP_MEMBER_OK);
     }
 
@@ -69,7 +67,7 @@ public class MemberDynamoController {
     })
     @PostMapping("/auth/login")
     public CustomResponse<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto) {
-        LoginResponseDto responseDto = memberDynamoService.login(requestDto);
+        LoginResponseDto responseDto = memberService.login(requestDto);
         return CustomResponse.success(responseDto, SuccessStatus.LOGIN_MEMBER_OK);
     }
 
@@ -118,7 +116,7 @@ public class MemberDynamoController {
     public CustomResponse<?> logout() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String phoneNum = (String) auth.getPrincipal();
-        memberDynamoService.logout(phoneNum);
+        memberService.logout(phoneNum);
         return CustomResponse.success(SuccessStatus.LOGOUT_MEMBER_OK);
     }
 
@@ -140,7 +138,7 @@ public class MemberDynamoController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String phoneNum = (String) auth.getPrincipal(); // Jwt에서 설정한 값
 
-        return CustomResponse.success(memberDynamoService.getMyInfo(phoneNum), SuccessStatus.GET_MY_INFO_OK);
+        return CustomResponse.success(memberService.getMyInfo(phoneNum), SuccessStatus.GET_MY_INFO_OK);
     }
 
     @Operation(summary = "멤버 정보 수정 API", description = "멤버 정보를 수정하는 API 입니다.")
@@ -160,7 +158,7 @@ public class MemberDynamoController {
     public CustomResponse<MemberResponseDto> updateMyInfo(@RequestBody MemberUpdateRequestDto requestDto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String phoneNum = (String) auth.getPrincipal();
-        MemberResponseDto responseDto = memberDynamoService.updateMyInfo(phoneNum, requestDto);
+        MemberResponseDto responseDto = memberService.updateMyInfo(phoneNum, requestDto);
         return CustomResponse.success(responseDto, SuccessStatus.UPDATE_MY_INFO_OK);
     }
 
@@ -191,21 +189,14 @@ public class MemberDynamoController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String phoneNum = (String) auth.getPrincipal();
 
-        memberDynamoService.changePassword(phoneNum, dto);
+        memberService.changePassword(phoneNum, dto);
         return CustomResponse.success(SuccessStatus.UPDATE_PASSWORD);
-    }
-
-    @Operation(summary = "단건 새로 저장 또는 덮어쓰는 API", description = "dynamo에 한 건을 새로 저장하거나 덮어씁니다.")
-    @PostMapping
-    public CustomResponse<MemberResponseDto> save(@RequestBody MemberRequestDto dto) {
-        MemberResponseDto saved = memberDynamoService.signUp(dto);
-        return CustomResponse.success(saved, SuccessStatus.DYNAMO_MEMBER_SAVE);
     }
 
     @Operation(summary = "ID로 단건 조회 API", description = "파티션 키로 한 건을 조회합니다.")
     @GetMapping("/{id}")
     public CustomResponse<MemberResponseDto> getById(@PathVariable Long id) {
-        MemberItem member = memberDynamoService.getById(id);
+        MemberItem member = memberService.getById(id);
 
         return CustomResponse.success(
                 MemberResponseDto.builder()
@@ -224,7 +215,7 @@ public class MemberDynamoController {
     @Operation(summary = "ID로 단건 레코드 삭제 API", description = "파티션 키에 해당하는 레코드를 삭제합니다.")
     @DeleteMapping("/{id}")
     public CustomResponse<String> deleteById(@PathVariable Long id) {
-        memberDynamoService.deleteById(id);
+        memberService.deleteById(id);
         return CustomResponse.success("memberItem id = " + id + "삭제 완료", SuccessStatus.DYNAMO_MEMBER_DELETE);
     }
 
@@ -232,7 +223,7 @@ public class MemberDynamoController {
     @GetMapping("/search")
     public CustomResponse<MemberAddressSearchResponseDto> findByAddress(@RequestParam String address) {
         return CustomResponse.success(
-                memberDynamoService.findByAddress(address),
+                memberService.findByAddress(address),
                 SuccessStatus.DYNAMO_MEMBER_GET
         );
     }

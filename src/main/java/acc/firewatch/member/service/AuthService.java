@@ -5,7 +5,6 @@ import acc.firewatch.common.exception.ErrorCode;
 import acc.firewatch.config.jwt.JwtTokenProvider;
 import acc.firewatch.member.dto.TokenResponse;
 import acc.firewatch.member.entity.MemberItem;
-import acc.firewatch.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberDynamoService memberDynamoService;
+    private final MemberService memberService;
 
     public TokenResponse reissueToken(String refreshToken) {
 
@@ -27,7 +26,7 @@ public class AuthService {
         Long memberId = jwtTokenProvider.parseClaims(refreshToken).get("memberId", Long.class);
 
         // DynamoDB에서 사용자 정보 조회
-        MemberItem memberItem = memberDynamoService.getById(memberId);
+        MemberItem memberItem = memberService.getById(memberId);
         if (memberItem == null || !refreshToken.equals(memberItem.getRefreshToken())) {
             throw new CustomException(ErrorCode.REFRESH_TOKEN_MISMATCH);
         }
@@ -37,7 +36,7 @@ public class AuthService {
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(memberItem.getPhoneNum(), memberItem.getId());
 
         // DynamoDB에 새로운 refreshToken 갱신
-        memberDynamoService.updateRefreshToken(memberId, newRefreshToken);
+        memberService.updateRefreshToken(memberId, newRefreshToken);
 
         return new TokenResponse(newAccessToken, newRefreshToken);
     }
