@@ -3,7 +3,7 @@ package acc.firewatch.cctv.controller;
 import acc.firewatch.cctv.dto.CctvRequestDto;
 import acc.firewatch.cctv.dto.CctvResponseDto;
 import acc.firewatch.cctv.entity.CctvItem;
-import acc.firewatch.cctv.service.CctvDynamoService;
+import acc.firewatch.cctv.service.CctvService;
 import acc.firewatch.common.exception.CustomException;
 import acc.firewatch.common.exception.ErrorCode;
 import acc.firewatch.common.response.dto.CustomResponse;
@@ -21,23 +21,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cctvs")
+@RequestMapping("/cctvs")
 @RequiredArgsConstructor
-public class CctvDynamoController {
+public class CctvController {
 
-    private final CctvDynamoService cctvDynamoService;
+    private final CctvService cctvService;
 
     @Operation(summary = "dynamo Cctv 테이블 생성 API", description = "dynamo에 Cctv 테이블을 생성합니다.")
     @PostMapping("/table")
     public CustomResponse<Void> createTable() {
-        cctvDynamoService.createTable();
+        cctvService.createTable();
         return CustomResponse.success(SuccessStatus.CREATE_DYNAMO_CCTV_TABLE);
     }
 
     @Operation(summary = "dynamo Cctv 테이블 삭제 API", description = "dynamo에 Cctv 테이블을 삭제합니다.")
     @DeleteMapping("/table")
     public CustomResponse<Void> deleteTable() {
-        cctvDynamoService.deleteTable();
+        cctvService.deleteTable();
         return CustomResponse.success(null, SuccessStatus.DELETE_DYNAMO_CCTV_TABLE);
     }
 
@@ -56,7 +56,7 @@ public class CctvDynamoController {
     })
     @PostMapping
     public CustomResponse<String> save(@RequestBody CctvRequestDto requestDto) {
-        cctvDynamoService.save(requestDto);
+        cctvService.save(requestDto);
         return CustomResponse.success("cctvItem ID: " + requestDto.getId(), SuccessStatus.DYNAMO_CCTV_SAVE);
     }
 
@@ -76,7 +76,7 @@ public class CctvDynamoController {
     })
     @GetMapping("/{id}")
     public CustomResponse<CctvItem> getById(@PathVariable String id) {
-        CctvItem item = cctvDynamoService.getById(id);
+        CctvItem item = cctvService.getById(id);
         if (item == null) {
             throw new CustomException(ErrorCode.DYNAMO_CCTV_NOT_FOUND);
         }
@@ -106,13 +106,13 @@ public class CctvDynamoController {
         // 검증 안함 → 있는 값이면 조회, 없으면 빈 리스트 반환
         if (district != null && !district.isBlank()) {
             return CustomResponse.success(
-                    cctvDynamoService.findByDistrict(district),
+                    cctvService.findByDistrict(district),
                     SuccessStatus.DYNAMO_CCTV_GET
             );
         }
 
         return CustomResponse.success(
-                cctvDynamoService.getAll(),
+                cctvService.getAll(),
                 SuccessStatus.DYNAMO_CCTV_GET
         );
     }
@@ -133,7 +133,7 @@ public class CctvDynamoController {
     })
     @PostMapping("/import-csv")
     public CustomResponse<?> uploadCsv(@RequestParam(defaultValue = "src/main/resources/cctv-merged.csv") String path) {
-        if(cctvDynamoService.uploadCsvToDynamo(path)){
+        if(cctvService.uploadCsvToDynamo(path)){
             return CustomResponse.success(SuccessStatus.CSV2DYNAMO_SAVE);
         }
         throw new CustomException(ErrorCode.CSV2DYNAMO_SAVE_FAIL);
@@ -155,7 +155,7 @@ public class CctvDynamoController {
     })
     @GetMapping("/districts")
     public CustomResponse<List<String>> getAllDistricts() {
-        List<String> districts = cctvDynamoService.getAllDistricts();
+        List<String> districts = cctvService.getAllDistricts();
         return CustomResponse.success(districts, SuccessStatus.DYNAMO_CCTV_GET);
     }
 
@@ -175,7 +175,7 @@ public class CctvDynamoController {
     })
     @DeleteMapping("/{id}")
     public CustomResponse<Void> deleteCctv(@PathVariable String id) {
-        cctvDynamoService.deleteById(id);
+        cctvService.deleteById(id);
         return CustomResponse.success(null, SuccessStatus.DYNAMO_CCTV_DELETE);
     }
 
@@ -195,7 +195,7 @@ public class CctvDynamoController {
     })
     @GetMapping("/{id}/stream")
     public CustomResponse<String> getCctvStreamUrl(@PathVariable String id) {
-        String streamUrl = cctvDynamoService.getStreamUrlById(id);
+        String streamUrl = cctvService.getStreamUrlById(id);
         return CustomResponse.success(streamUrl, SuccessStatus.DYNAMO_CCTVURL_GET);
     }
 

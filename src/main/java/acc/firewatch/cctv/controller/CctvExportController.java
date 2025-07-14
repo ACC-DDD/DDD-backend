@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cctvs/export")
+@RequestMapping("/cctvs/export")
 @RequiredArgsConstructor
 public class CctvExportController {
 
