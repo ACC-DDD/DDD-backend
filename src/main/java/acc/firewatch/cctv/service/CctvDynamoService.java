@@ -109,7 +109,7 @@ public class CctvDynamoService {
         QueryConditional query = QueryConditional.keyEqualTo(Key.builder().partitionValue(district).build());
 
         SdkIterable<Page<CctvItem>> results = getTable()
-                .index("DistrictIndex")
+                .index(GSI_NAME)
                 .query(query);
 
         return StreamSupport.stream(results.spliterator(), false)
