@@ -15,7 +15,14 @@ public class MemberItem {
     private Long id;
     private String name;
     private String phoneNum;
+    private String password;
+
+    private String city;
+    private String district;
+    private String detail;
     private String address; // city+district
+
+    private boolean verified;
     private String refreshToken;
 
     @DynamoDbPartitionKey
@@ -26,5 +33,10 @@ public class MemberItem {
     @DynamoDbSecondaryPartitionKey(indexNames = "address-index")
     public String getAddress(){
         return address;
+    }
+
+    @DynamoDbSecondaryPartitionKey(indexNames = "phoneNum-index")
+    public String getPhoneNum(){
+        return phoneNum;
     }
 }
