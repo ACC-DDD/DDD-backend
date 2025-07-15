@@ -1,6 +1,6 @@
 package acc.firewatch.cctv.service;
 
-import acc.firewatch.cctv.Repository.CctvRepository;
+import acc.firewatch.cctv.repository.CctvRepository;
 import acc.firewatch.cctv.dto.CctvRequestDto;
 import acc.firewatch.cctv.dto.CctvResponseDto;
 import acc.firewatch.cctv.entity.CctvItem;
