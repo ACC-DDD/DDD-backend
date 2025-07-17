@@ -1,4 +1,4 @@
-package acc.firewatch.cctv.Repository;
+package acc.firewatch.cctv.repository;
 
 import acc.firewatch.cctv.entity.CctvItem;
 import lombok.RequiredArgsConstructor;
