@@ -43,3 +43,4 @@ out/
 ### secret key ###
 .env
 application-local.yml
+task-definition-local.json
