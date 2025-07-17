@@ -5,10 +5,10 @@ import acc.firewatch.common.exception.ErrorCode;
 import acc.firewatch.config.jwt.JwtTokenProvider;
 import acc.firewatch.member.dto.TokenReissueResponseDto;
 import acc.firewatch.member.entity.MemberItem;
+import acc.firewatch.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 
@@ -18,7 +18,7 @@ public class AuthService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     public TokenReissueResponseDto reissueToken(String refreshToken) {
 
@@ -39,7 +39,7 @@ public class AuthService {
         }
 
         // 사용자 정보 조회
-        MemberItem memberItem = memberService.getById(memberId);
+        MemberItem memberItem = memberRepository.getById(memberId);
         if (memberItem == null) {
             throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
@@ -55,7 +55,6 @@ public class AuthService {
         return new TokenReissueResponseDto(newAccessToken, newRefreshToken);
     }
 
-    @Transactional
     public void logout(Long memberId) {
         String redisKey = "refresh_token:" + memberId;
         redisTemplate.delete(redisKey);

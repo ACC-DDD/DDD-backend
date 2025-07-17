@@ -161,19 +161,9 @@ public class MemberService {
                 .build();
     }
 
-    // ID로 단건 조회
-    public MemberItem getById(Long id) {
-        MemberItem member = memberRepository.getById(id);
-        if (member == null) {
-            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-        return member;
-    }
-
-    // id에 해당하는 레코드 삭제
+    // id에 해당하는 멤버 레코드 삭제
     public void deleteById(Long id) {
         memberRepository.deleteById(id);
         log.info("삭제 완료: id = {}", id);
     }
-
 }
