@@ -2,6 +2,7 @@ package acc.firewatch.member.controller;
 
 import acc.firewatch.common.response.dto.CustomResponse;
 import acc.firewatch.common.response.dto.SuccessStatus;
+import acc.firewatch.config.security.SecurityUtil;
 import acc.firewatch.member.dto.*;
 import acc.firewatch.member.entity.MemberItem;
 import acc.firewatch.member.service.AuthService;
@@ -94,8 +95,8 @@ public class MemberController {
             )
     })
     @PostMapping("/auth/reissue")
-    public CustomResponse<TokenResponse> reissue(@RequestBody TokenReissueRequest request) {
-        TokenResponse response = authService.reissueToken(request.getRefreshToken());
+    public CustomResponse<TokenReissueResponseDto> reissue(@RequestBody TokenReissueRequestDto request) {
+        TokenReissueResponseDto response = authService.reissueToken(request.getRefreshToken());
         return CustomResponse.success(response, SuccessStatus.TOKEN_REISSUE_OK);
     }
 
@@ -114,9 +115,8 @@ public class MemberController {
     })
     @PostMapping("/me/logout")
     public CustomResponse<?> logout() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNum = (String) auth.getPrincipal();
-        memberService.logout(phoneNum);
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        authService.logout(memberId);
         return CustomResponse.success(SuccessStatus.LOGOUT_MEMBER_OK);
     }
 
@@ -135,9 +135,7 @@ public class MemberController {
     })
     @GetMapping("/me")
     public CustomResponse<MemberResponseDto> getMyInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNum = (String) auth.getPrincipal(); // Jwt에서 설정한 값
-
+        String phoneNum = SecurityUtil.getCurrentPhoneNum();
         return CustomResponse.success(memberService.getMyInfo(phoneNum), SuccessStatus.GET_MY_INFO_OK);
     }
 
@@ -156,8 +154,7 @@ public class MemberController {
     })
     @PatchMapping("/me")
     public CustomResponse<MemberResponseDto> updateMyInfo(@RequestBody MemberUpdateRequestDto requestDto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNum = (String) auth.getPrincipal();
+        String phoneNum = SecurityUtil.getCurrentPhoneNum();
         MemberResponseDto responseDto = memberService.updateMyInfo(phoneNum, requestDto);
         return CustomResponse.success(responseDto, SuccessStatus.UPDATE_MY_INFO_OK);
     }
@@ -186,9 +183,7 @@ public class MemberController {
     })
     @PatchMapping("/me/password")
     public CustomResponse<?> changePassword(@RequestBody PasswordChangeRequestDto dto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNum = (String) auth.getPrincipal();
-
+        String phoneNum = SecurityUtil.getCurrentPhoneNum();
         memberService.changePassword(phoneNum, dto);
         return CustomResponse.success(SuccessStatus.UPDATE_PASSWORD);
     }
