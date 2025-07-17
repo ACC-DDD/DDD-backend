@@ -1,4 +1,4 @@
-package acc.firewatch.config;
+package acc.firewatch.config.security;
 
 import acc.firewatch.config.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/members/auth/**",
+                                "/debug/**",
                                 "/h2/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",

@@ -2,6 +2,7 @@ package acc.firewatch.member.controller;
 
 import acc.firewatch.common.response.dto.CustomResponse;
 import acc.firewatch.common.response.dto.SuccessStatus;
+import acc.firewatch.config.security.SecurityUtil;
 import acc.firewatch.member.dto.*;
 import acc.firewatch.member.entity.MemberItem;
 import acc.firewatch.member.service.AuthService;
@@ -94,8 +95,8 @@ public class MemberController {
             )
     })
     @PostMapping("/auth/reissue")
-    public CustomResponse<TokenResponse> reissue(@RequestBody TokenReissueRequest request) {
-        TokenResponse response = authService.reissueToken(request.getRefreshToken());
+    public CustomResponse<TokenReissueResponseDto> reissue(@RequestBody TokenReissueRequestDto request) {
+        TokenReissueResponseDto response = authService.reissueToken(request.getRefreshToken());
         return CustomResponse.success(response, SuccessStatus.TOKEN_REISSUE_OK);
     }
 
@@ -114,9 +115,8 @@ public class MemberController {
     })
     @PostMapping("/me/logout")
     public CustomResponse<?> logout() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNum = (String) auth.getPrincipal();
-        memberService.logout(phoneNum);
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        authService.logout(memberId);
         return CustomResponse.success(SuccessStatus.LOGOUT_MEMBER_OK);
     }
 
@@ -135,9 +135,7 @@ public class MemberController {
     })
     @GetMapping("/me")
     public CustomResponse<MemberResponseDto> getMyInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNum = (String) auth.getPrincipal(); // Jwt에서 설정한 값
-
+        String phoneNum = SecurityUtil.getCurrentPhoneNum();
         return CustomResponse.success(memberService.getMyInfo(phoneNum), SuccessStatus.GET_MY_INFO_OK);
     }
 
@@ -156,8 +154,7 @@ public class MemberController {
     })
     @PatchMapping("/me")
     public CustomResponse<MemberResponseDto> updateMyInfo(@RequestBody MemberUpdateRequestDto requestDto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNum = (String) auth.getPrincipal();
+        String phoneNum = SecurityUtil.getCurrentPhoneNum();
         MemberResponseDto responseDto = memberService.updateMyInfo(phoneNum, requestDto);
         return CustomResponse.success(responseDto, SuccessStatus.UPDATE_MY_INFO_OK);
     }
@@ -186,37 +183,9 @@ public class MemberController {
     })
     @PatchMapping("/me/password")
     public CustomResponse<?> changePassword(@RequestBody PasswordChangeRequestDto dto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNum = (String) auth.getPrincipal();
-
+        String phoneNum = SecurityUtil.getCurrentPhoneNum();
         memberService.changePassword(phoneNum, dto);
         return CustomResponse.success(SuccessStatus.UPDATE_PASSWORD);
-    }
-
-    @Operation(summary = "ID로 단건 조회 API", description = "파티션 키로 한 건을 조회합니다.")
-    @GetMapping("/{id}")
-    public CustomResponse<MemberResponseDto> getById(@PathVariable Long id) {
-        MemberItem member = memberService.getById(id);
-
-        return CustomResponse.success(
-                MemberResponseDto.builder()
-                        .id(member.getId())
-                        .name(member.getName())
-                        .phoneNum(member.getPhoneNum())
-                        .verified(member.isVerified())
-                        .city(member.getCity())
-                        .district(member.getDistrict())
-                        .detail(member.getDetail())
-                        .build(),
-                SuccessStatus.DYNAMO_MEMBER_GET
-        );
-    }
-
-    @Operation(summary = "ID로 단건 레코드 삭제 API", description = "파티션 키에 해당하는 레코드를 삭제합니다.")
-    @DeleteMapping("/{id}")
-    public CustomResponse<String> deleteById(@PathVariable Long id) {
-        memberService.deleteById(id);
-        return CustomResponse.success("memberItem id = " + id + "삭제 완료", SuccessStatus.DYNAMO_MEMBER_DELETE);
     }
 
     @Operation(summary = "주소 기준 전체 MEMBER 조회 API", description = "주소(city + district)에 해당하는 전체 MEMBER를 조회합니다.")
@@ -226,5 +195,12 @@ public class MemberController {
                 memberService.findByAddress(address),
                 SuccessStatus.DYNAMO_MEMBER_GET
         );
+    }
+
+    @Operation(summary = "ID로 멤버 레코드 삭제 API", description = "멤버 테이블에서 파티션 키에 해당하는 레코드를 삭제합니다.")
+    @DeleteMapping("/members/{id}")
+    public CustomResponse<String> deleteById(@PathVariable Long id) {
+        memberService.deleteById(id);
+        return CustomResponse.success("memberItem id = " + id + "삭제 완료", SuccessStatus.DYNAMO_MEMBER_DELETE);
     }
 }

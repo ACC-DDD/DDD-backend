@@ -8,9 +8,11 @@ import acc.firewatch.member.entity.MemberItem;
 import acc.firewatch.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -18,6 +20,7 @@ import java.util.List;
 @Slf4j
 public class MemberService {
 
+    private final RedisTemplate<String, String> redisTemplate;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -43,7 +46,6 @@ public class MemberService {
                 .detail(dto.getDetail())
                 .address(dto.getCity()+ " " +dto.getDistrict()) // city+district. ex) 서울시 강남구
                 .verified(false)
-                .refreshToken(null)
                 .build();
 
         memberRepository.save(member);
@@ -71,8 +73,9 @@ public class MemberService {
         String accessToken = jwtTokenProvider.generateToken(member.getPhoneNum(), member.getId());
         String refreshToken = jwtTokenProvider.generateRefreshToken(member.getPhoneNum(), member.getId());
 
-        member.setRefreshToken(refreshToken);
-        memberRepository.update(member);
+        // Redis에 Refresh Token 저장(TTL 포함)
+        String redisKey = "refresh_token:" + member.getId();
+        redisTemplate.opsForValue().set(redisKey, refreshToken, Duration.ofDays(7));
 
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
@@ -80,15 +83,6 @@ public class MemberService {
                 .name(member.getName())
                 .memberId(member.getId())
                 .build();
-    }
-
-    // 로그아웃
-    public void logout(String phoneNum) {
-        MemberItem member = memberRepository.findByPhoneNum(phoneNum)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        member.setRefreshToken(null);
-        memberRepository.update(member);
     }
 
     // 내 정보 조회
@@ -167,30 +161,9 @@ public class MemberService {
                 .build();
     }
 
-    // refreshToken 갱신: null이 아닌 필드들은 모두 갱신되고, null인 필드는 기존 값 유지되는 구조를 활용
-    public void updateRefreshToken(Long memberId, String newRefreshToken) {
-        MemberItem member = getById(memberId);
-        if (member == null) {
-            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-
-        member.setRefreshToken(newRefreshToken);
-        memberRepository.update(member);
-    }
-
-    // ID로 단건 조회
-    public MemberItem getById(Long id) {
-        MemberItem member = memberRepository.getById(id);
-        if (member == null) {
-            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-        return member;
-    }
-
-    // id에 해당하는 레코드 삭제
+    // id에 해당하는 멤버 레코드 삭제
     public void deleteById(Long id) {
         memberRepository.deleteById(id);
         log.info("삭제 완료: id = {}", id);
     }
-
 }

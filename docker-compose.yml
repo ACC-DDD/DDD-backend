@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  app-server:
+    image: ${DOCKER_USERNAME}/${DOCKER_REPO}
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - DYNAMO_REGION=${DYNAMO_REGION}
+      - DYNAMO_ACCESS=${DYNAMO_ACCESS}
+      - DYNAMO_SECRET=${DYNAMO_SECRET}
+      - SQS_REGION=${SQS_REGION}
+      - JWT_SECRET=${JWT_SECRET}
+      - ACCESS_EXPIRATION=${ACCESS_EXPIRATION}
+      - REFRESH_EXPIRATION=${REFRESH_EXPIRATION}
+      - ITS_KEY=${ITS_KEY}
+      - VWORLD_KEY=${VWORLD_KEY}
+
+  redis:
+    image: redis:7.2
+    container_name: redis-server
+    ports:
+      - "6379:6379"
