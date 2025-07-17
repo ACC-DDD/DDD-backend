@@ -32,4 +32,11 @@ public class DebugController {
     public CustomResponse<Set<String>> listAllRefreshTokenKeys() {
         return CustomResponse.success(debugService.listRefreshTokenKeys(),SuccessStatus.SUCCESS);
     }
+
+    @Operation(summary = "refresh 토큰의 TTL 조회 API", description = "redis에 저장된 멤버 ID에 해당하는 refresh 토큰의 TTL을 조회합니다.")
+    @GetMapping("/redis/refresh-token/{id}/ttl")
+    public CustomResponse<Long> getRefreshTokenTTL(@PathVariable Long id) {
+        return CustomResponse.success(debugService.getRefreshTokenTTL(id), SuccessStatus.SUCCESS);
+    }
+
 }

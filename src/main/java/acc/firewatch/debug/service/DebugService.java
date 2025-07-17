@@ -22,4 +22,8 @@ public class DebugService {
         return redisTemplate.keys("refresh_token:*");
     }
 
+    public Long getRefreshTokenTTL(Long memberId) {
+        return redisTemplate.getExpire("refresh_token:" + memberId);
+    }
+
 }
