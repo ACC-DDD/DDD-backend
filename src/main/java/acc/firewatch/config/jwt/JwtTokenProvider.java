@@ -61,9 +61,10 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
         String phoneNum = claims.getSubject();
+        Long memberId = claims.get("memberId", Long.class);
 
         return new UsernamePasswordAuthenticationToken(
-                phoneNum,
+                new CustomUserPrincipal(memberId, phoneNum),
                 null,
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")) // or emptyList
         );
