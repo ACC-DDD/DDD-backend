@@ -54,6 +54,11 @@ dependencies {
 	implementation platform('software.amazon.awssdk:bom:2.20.85')
 	implementation 'software.amazon.awssdk:dynamodb-enhanced'
 
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.data:spring-data-redis'
+	implementation 'io.lettuce:lettuce-core'
+
 	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
