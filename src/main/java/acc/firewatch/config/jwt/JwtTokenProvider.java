@@ -2,12 +2,12 @@ package acc.firewatch.config.jwt;
 
 import acc.firewatch.common.exception.CustomException;
 import acc.firewatch.common.exception.ErrorCode;
+import acc.firewatch.config.security.CustomUserPrincipal;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

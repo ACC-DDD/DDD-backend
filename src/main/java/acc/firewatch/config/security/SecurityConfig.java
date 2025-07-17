@@ -1,4 +1,4 @@
-package acc.firewatch.config;
+package acc.firewatch.config.security;
 
 import acc.firewatch.config.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;

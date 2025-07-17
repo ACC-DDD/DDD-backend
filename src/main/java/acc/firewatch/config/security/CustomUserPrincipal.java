@@ -1,6 +1,5 @@
-package acc.firewatch.config.jwt;
+package acc.firewatch.config.security;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
