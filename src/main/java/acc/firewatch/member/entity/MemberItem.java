@@ -23,7 +23,6 @@ public class MemberItem {
     private String address; // city+district
 
     private boolean verified;
-    private String refreshToken;
 
     @DynamoDbPartitionKey
     public Long getId(){
