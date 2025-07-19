@@ -2,12 +2,14 @@ package acc.firewatch.config.jwt;
 
 import acc.firewatch.common.exception.CustomException;
 import acc.firewatch.common.exception.ErrorCode;
+import acc.firewatch.config.security.CustomAuthenticationEntryPoint;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,13 +23,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import static acc.firewatch.common.response.dto.CustomResponseUtils.writeErrorResponse;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -49,10 +51,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = resolveToken(request);
 
-        if(StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (StringUtils.hasText(token)) {
+            try {
+                boolean valid = jwtTokenProvider.validateToken(token);
+                if (valid) {
+                    Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (CustomException e) {
+                SecurityContextHolder.clearContext();
+                authenticationEntryPoint.commence(request, response,
+                        new BadCredentialsException(e.getMessage(), e));
+                return;
+            }
         }
+
         filterChain.doFilter(request, response);
     }
 
@@ -63,4 +76,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
 }
