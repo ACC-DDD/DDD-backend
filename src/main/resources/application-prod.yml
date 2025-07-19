@@ -18,6 +18,8 @@ aws:
       auto: false
     region:
       static: ${SQS_REGION}
+    queues:
+      fcm-token-queue: ${SQS_NAME}
 
 server:
   port: 8080

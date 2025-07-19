@@ -23,6 +23,13 @@ repositories {
 	mavenCentral()
 }
 
+// Spring Cloud AWS Dependencies BOM
+dependencyManagement {
+    imports {
+        mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1"
+    }
+}
+
 dependencies {
 
 	// springBoot
@@ -53,6 +60,11 @@ dependencies {
 	// aws
 	implementation platform('software.amazon.awssdk:bom:2.20.85')
 	implementation 'software.amazon.awssdk:dynamodb-enhanced'
+
+  // SQS - AWS SDK v2
+  implementation 'software.amazon.awssdk:sqs' 
+  implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs'
+  
 
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
