@@ -31,6 +31,9 @@ public enum SuccessStatus {
     DYNAMO_CCTVURL_GET(200,"cctvUrl 조회 성공"),
     CSV2DYNAMO_SAVE(201,"CSV -> DynamoDB 업로드 성공"),
     DYNAMO_CCTV_DELETE(200, "cctvItem 삭제 성공"),
+
+    // fcm
+    SEND_FCM_MESSAGE_OK(200, "FCM 토큰 메시지가 성공적으로 전송되었습니다."),
     ;
 
     private final int code;

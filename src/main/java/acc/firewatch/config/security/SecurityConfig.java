@@ -34,12 +34,12 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/members/auth/**",
                                 "/debug/**",
+                                "/fcm/**",
                                 "/h2/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
-                                "/webjars/**",
-                                "/api/fcm/**"
+                                "/webjars/**"
                         ).permitAll().anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

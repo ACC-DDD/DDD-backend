@@ -39,6 +39,9 @@ public enum ErrorCode {
     DYNAMO_CCTV_NOT_FOUND(400, "DynamoDB에서 해당 cctvItem을 찾을 수 없습니다."),
     CSV2DYNAMO_SAVE_FAIL( 500,"csv 업로드 중 서버에서 에러가 발생했습니다."),
     INVALID_DISTRICT(400,"존재하지 않는 행정구역입니다."),
+
+    // fcm
+    SQS_SEND_ERROR(500,"FCM 메시지를 전송하는 중 문제가 발생했습니다."),
     ;
 
     private final int code;
