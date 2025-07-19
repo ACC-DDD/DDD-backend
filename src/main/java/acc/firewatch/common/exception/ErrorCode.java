@@ -32,6 +32,7 @@ public enum ErrorCode {
     AUTHENTICATION_INFO_NOT_FOUND(401, "인증 정보가 존재하지 않습니다."),
     INVALID_AUTH_PRINCIPAL(403, "인증된 사용자 정보 형식이 올바르지 않습니다."),
     INVALID_MEMBER_ID_IN_TOKEN(400, "토큰에서 memberId를 추출할 수 없습니다."),
+    AUTH_UNKNOWN_ERROR(401,"인증에 실패했습니다. 토큰을 확인해주세요."),
 
     // cctv
     CCTV_CSV_SAVE_ERROR(500,"CCTV CSV 저장 중 오류 발생"),
