@@ -1,0 +1,55 @@
+name: Cleanup Old ECS Task Definitions
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [ "Deploy to ECS" ]
+    types:
+      - completed
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  cleanup:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.GitHubOIDC_RoleName }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deregister old ECS task definition revisions (keep latest 3)
+        run: |
+          FAMILY_NAME=ddd-task
+          KEEP_COUNT=3
+          
+          # 모든 revision 가져오기 (최신순)
+          REVISIONS=$(aws ecs list-task-definitions \
+            --family-prefix $FAMILY_NAME \
+            --sort DESC \
+            --region ${{ secrets.AWS_REGION }} \
+            --query "taskDefinitionArns" \
+            --output text)
+
+          echo "All revisions:"
+          echo "$REVISIONS"
+
+          REVISIONS_TO_DELETE=$(echo $REVISIONS | tr '\t' '\n' | tail -n +$((KEEP_COUNT + 1)))
+
+          if [ -z "$REVISIONS_TO_DELETE" ]; then
+            echo "No old revisions to delete."
+            exit 0
+          fi
+
+          echo "Deregistering old revisions:"
+          for arn in $REVISIONS_TO_DELETE; do
+            echo "Deregistering $arn"
+            aws ecs deregister-task-definition \
+              --task-definition $arn \
+              --region ${{ secrets.AWS_REGION }}
+          done
