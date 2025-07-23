@@ -3,6 +3,8 @@ name: Deploy to ECS
 on:
   push:
     branches: [ main, develop ]
+  pull_request:
+    branches: [ develop ]
 
 permissions:
   id-token: write
