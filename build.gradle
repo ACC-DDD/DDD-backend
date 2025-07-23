@@ -57,14 +57,17 @@ dependencies {
 	// swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 
-	// aws
+	// dynamoDB
 	implementation platform('software.amazon.awssdk:bom:2.20.85')
 	implementation 'software.amazon.awssdk:dynamodb-enhanced'
 
-  // SQS - AWS SDK v2
-  implementation 'software.amazon.awssdk:sqs' 
-  implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs'
-  
+	// SQS
+	implementation 'software.amazon.awssdk:sqs'
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs'
+
+	// secrets manager
+	implementation platform('io.awspring.cloud:spring-cloud-aws-dependencies:3.1.0')
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager'
 
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
