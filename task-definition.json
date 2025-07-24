@@ -10,53 +10,8 @@
       "portMappings": [{ "containerPort": 8080 }],
       "essential": true,
       "environment": [
-        { "name": "SPRING_PROFILES_ACTIVE", "value": "prod" }
-      ],
-      "secrets": [
-        {
-          "name": "AWS_ACCESS_KEY",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:925676828058:secret:acc/ddd/prod:AWS_ACCESS_KEY"
-        },
-        {
-          "name": "AWS_SECRET_KEY",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:925676828058:secret:acc/ddd/prod:AWS_SECRET_KEY"
-        },
-        {
-          "name": "DYNAMO_REGION",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:925676828058:secret:acc/ddd/prod:DYNAMO_REGION"
-        },
-        {
-          "name": "DYNAMO_ACCESS",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:925676828058:secret:acc/ddd/prod:DYNAMO_ACCESS"
-        },
-        {
-          "name": "DYNAMO_SECRET",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:925676828058:secret:acc/ddd/prod:DYNAMO_SECRET"
-        },
-        {
-          "name": "SQS_REGION",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:925676828058:secret:acc/ddd/prod:SQS_REGION"
-        },
-        {
-          "name": "JWT_SECRET",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:925676828058:secret:acc/ddd/prod:JWT_SECRET"
-        },
-        {
-          "name": "ACCESS_EXPIRATION",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:925676828058:secret:acc/ddd/prod:ACCESS_EXPIRATION"
-        },
-        {
-          "name": "REFRESH_EXPIRATION",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:925676828058:secret:acc/ddd/prod:REFRESH_EXPIRATION"
-        },
-        {
-          "name": "ITS_KEY",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:925676828058:secret:acc/ddd/prod:ITS_KEY"
-        },
-        {
-          "name": "VWORLD_KEY",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:925676828058:secret:acc/ddd/prod:VWORLD_KEY"
-        }
+        { "name": "SPRING_PROFILES_ACTIVE", "value": "prod" },
+        { "name": "SPRING_CONFIG_IMPORT", "value": "aws-secretsmanager:/acc/ddd/prod/" }
       ]
     },
     {
