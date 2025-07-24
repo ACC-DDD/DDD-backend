@@ -21,7 +21,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.GitHubOIDC_RoleName }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.GITHUBOIDC_ROLENAME }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Set up JDK 17
@@ -56,6 +56,7 @@ jobs:
           task-definition: task-definition.json
           container-name: app-server
           image: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
+          execution-role-arn: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.ECS_EXECUTION_ROLENAME }}
 
       - name: Deploy to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
