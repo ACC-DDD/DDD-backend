@@ -49,12 +49,7 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Inject executionRoleArn into task definition
-        run: |
-          sed -i "s|\"family\": \"ddd-task\",|\"family\": \"ddd-task\",\n  \"executionRoleArn\": \"arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.ECS_EXECUTION_ROLENAME }}\",|" task-definition.json
-
       - name: Render task definition with new image
-        id: render-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
