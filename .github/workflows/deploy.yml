@@ -55,6 +55,7 @@ jobs:
           sed -i "s|\${ECS_EXECUTION_ROLENAME}|${{ secrets.ECS_EXECUTION_ROLENAME }}|g" task-definition.json
 
       - name: Render task definition with new image
+        id: render-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
