@@ -3,6 +3,8 @@ spring:
     redis:
       host: redis
       port: 6379
+  config:
+    import: optional:aws-secretsmanager:/acc/ddd/prod/
 
 aws:
   credentials:
