@@ -18,7 +18,7 @@
           "name": "SPRING_PROFILES_ACTIVE", "value": "prod"
         },
         {
-          "name": "SPRING_CONFIG_IMPORT", "value": "aws-secretsmanager:/acc/ddd/prod/"
+          "name": "SPRING_APPLICATION_JSON", "value": "{\"spring.config.import\":\"optional:aws-secretsmanager:acc/ddd/prod\"}"
         }
       ],
       "logConfiguration": {
