@@ -49,6 +49,11 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
+      - name: Replace env vars in task definition
+        run: |
+          sed -i "s|\${AWS_ACCOUNT_ID}|${{ secrets.AWS_ACCOUNT_ID }}|g" task-definition.json
+          sed -i "s|\${ECS_EXECUTION_ROLENAME}|${{ secrets.ECS_EXECUTION_ROLENAME }}|g" task-definition.json
+
       - name: Render task definition with new image
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
