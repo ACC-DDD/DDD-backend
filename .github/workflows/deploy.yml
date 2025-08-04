@@ -53,6 +53,7 @@ jobs:
         run: |
           sed -i "s|\${AWS_ACCOUNT_ID}|${{ secrets.AWS_ACCOUNT_ID }}|g" task-definition.json
           sed -i "s|\${ECS_EXECUTION_ROLENAME}|${{ secrets.ECS_EXECUTION_ROLENAME }}|g" task-definition.json
+          sed -i "s|\${ECS_TASK_ROLENAME}|${{ secrets.ECS_TASK_ROLENAME }}|g" task-definition.json
 
       - name: Render task definition with new image
         id: render-task-def
