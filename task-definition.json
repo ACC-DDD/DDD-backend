@@ -41,7 +41,16 @@
           "containerPort": 6379
         }
       ],
-      "essential": false
+      "essential": true,
+      "command": ["redis-server", "--protected-mode", "no"],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "ecs/spring/ddd-task",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "redis"
+        }
+      }
     }
   ]
 }
