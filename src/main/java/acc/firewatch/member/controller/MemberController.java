@@ -4,7 +4,6 @@ import acc.firewatch.common.response.dto.CustomResponse;
 import acc.firewatch.common.response.dto.SuccessStatus;
 import acc.firewatch.config.security.SecurityUtil;
 import acc.firewatch.member.dto.*;
-import acc.firewatch.member.entity.MemberItem;
 import acc.firewatch.member.service.AuthService;
 import acc.firewatch.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,9 +11,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -48,7 +46,7 @@ public class MemberController {
             )
     })
     @PostMapping("/auth/signup")
-    public CustomResponse<MemberResponseDto> signUp(@RequestBody MemberRequestDto requestDto) {
+    public CustomResponse<MemberResponseDto> signUp(@Valid @RequestBody MemberRequestDto requestDto) {
         MemberResponseDto responseDto = memberService.signUp(requestDto);
         return CustomResponse.success(responseDto, SuccessStatus.SIGNUP_MEMBER_OK);
     }

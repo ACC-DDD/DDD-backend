@@ -36,10 +36,13 @@ public class MemberService {
             throw new CustomException(ErrorCode.ALREADY_EXIST_MEMBER);
         }
 
+        String cleanPhoneNum = dto.getPhoneNum().replaceAll("-", "");
+        dto.setPhoneNum(cleanPhoneNum);
+
         MemberItem member = MemberItem.builder()
                 .id(memberSeq++)
                 .name(dto.getName())
-                .phoneNum(dto.getPhoneNum())
+                .phoneNum(cleanPhoneNum)
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .city(dto.getCity())
                 .district(dto.getDistrict())
