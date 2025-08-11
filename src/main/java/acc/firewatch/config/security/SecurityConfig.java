@@ -19,6 +19,15 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    public static final String[] WHITELIST = {
+            "/",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/members/auth/**",
+            "/fcm/**",
+            "/webjars/**"
+    };
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -31,16 +40,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/members/auth/**",
-                                "/debug/**",
-                                "/fcm/**",
-                                "/h2/**",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-resources/**",
-                                "/webjars/**"
-                        ).permitAll().anyRequest().authenticated()
+                        .requestMatchers(WHITELIST).permitAll().anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
                     .authenticationEntryPoint(customAuthenticationEntryPoint)
