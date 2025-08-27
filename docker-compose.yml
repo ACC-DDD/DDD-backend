@@ -6,6 +6,8 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
       - DYNAMO_REGION=${DYNAMO_REGION}
@@ -17,9 +19,3 @@ services:
       - REFRESH_EXPIRATION=${REFRESH_EXPIRATION}
       - ITS_KEY=${ITS_KEY}
       - VWORLD_KEY=${VWORLD_KEY}
-
-  redis:
-    image: redis:7.2
-    container_name: redis-server
-    ports:
-      - "6379:6379"
