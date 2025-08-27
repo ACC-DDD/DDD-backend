@@ -1,8 +1,10 @@
 spring:
   data:
     redis:
-      host: redis
-      port: 6379
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      ssl:
+        enabled: true
 
 aws:
   credentials:
