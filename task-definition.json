@@ -18,10 +18,12 @@
       "essential": true,
       "environment": [
         {
-          "name": "SPRING_PROFILES_ACTIVE", "value": "prod"
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "prod"
         },
         {
-          "name": "SPRING_CONFIG_IMPORT", "value": "optional:aws-secretsmanager:acc/ddd/prod"
+          "name": "SPRING_CONFIG_IMPORT",
+          "value": "optional:aws-secretsmanager:acc/ddd/prod"
         }
       ],
       "logConfiguration": {
@@ -30,25 +32,6 @@
           "awslogs-group": "ecs/spring/ddd-task",
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "app"
-        }
-      }
-    },
-    {
-      "name": "redis",
-      "image": "redis:7.2",
-      "portMappings": [
-        {
-          "containerPort": 6379
-        }
-      ],
-      "essential": true,
-      "command": ["redis-server", "--protected-mode", "no"],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "ecs/spring/ddd-task",
-          "awslogs-region": "ap-northeast-2",
-          "awslogs-stream-prefix": "redis"
         }
       }
     }
