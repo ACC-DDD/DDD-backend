@@ -7,13 +7,8 @@ spring:
         enabled: true
 
 aws:
-  credentials:
-    access-key: ${AWS_ACCESS_KEY}
-    secret-key: ${AWS_SECRET_KEY}
   dynamodb:
     region: ${DYNAMO_REGION}
-    access-key: ${DYNAMO_ACCESS}
-    secret-key: ${DYNAMO_SECRET}
   sqs:
     enabled: true
     stack:
