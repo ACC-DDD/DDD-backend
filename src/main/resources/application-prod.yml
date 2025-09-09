@@ -1,17 +1,14 @@
 spring:
   data:
     redis:
-      host: redis
-      port: 6379
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      ssl:
+        enabled: true
 
 aws:
-  credentials:
-    access-key: ${AWS_ACCESS_KEY}
-    secret-key: ${AWS_SECRET_KEY}
   dynamodb:
     region: ${DYNAMO_REGION}
-    access-key: ${DYNAMO_ACCESS}
-    secret-key: ${DYNAMO_SECRET}
   sqs:
     enabled: true
     stack:
