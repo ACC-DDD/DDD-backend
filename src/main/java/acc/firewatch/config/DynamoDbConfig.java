@@ -14,10 +14,6 @@ public class DynamoDbConfig {
 
     @Value("${aws.dynamodb.region}")
     private String region;
-    @Value("${aws.dynamodb.access-key}")
-    private String accessKey;
-    @Value("${aws.dynamodb.secret-key}")
-    private String secretKey;
 
 
     // DynamoDB Low-Level Client (기본 클라이언트)
@@ -25,11 +21,6 @@ public class DynamoDbConfig {
     public DynamoDbClient dynamoDbClient() {
         return DynamoDbClient.builder()
                 .region(Region.of(region)) // 서울 리전
-                .credentialsProvider(
-                        StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(accessKey, secretKey)
-                        )
-                )
                 .build();
     }
 
