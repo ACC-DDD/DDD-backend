@@ -1,21 +1,31 @@
 version: "3.8"
 services:
-  app-server:
-    image: ${DOCKER_USERNAME}/${DOCKER_REPO}
+  app:
+    container_name: ddd-app
+    image: ddd-app:latest
+    env_file:
+      - .env
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
-      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
-      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
-      - DYNAMO_REGION=${DYNAMO_REGION}
-      - DYNAMO_ACCESS=${DYNAMO_ACCESS}
-      - DYNAMO_SECRET=${DYNAMO_SECRET}
-      - SQS_REGION=${SQS_REGION}
-      - JWT_SECRET=${JWT_SECRET}
-      - ACCESS_EXPIRATION=${ACCESS_EXPIRATION}
-      - REFRESH_EXPIRATION=${REFRESH_EXPIRATION}
-      - ITS_KEY=${ITS_KEY}
-      - VWORLD_KEY=${VWORLD_KEY}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  redis:
+    container_name: ddd-redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  app-network:
+    driver: bridge

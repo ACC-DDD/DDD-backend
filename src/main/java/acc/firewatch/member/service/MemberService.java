@@ -24,7 +24,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private Long memberSeq=1L;
+    private Long memberSeq= (Long) 1L;
 
     // 회원가입
     public MemberResponseDto signUp(MemberRequestDto dto) {
